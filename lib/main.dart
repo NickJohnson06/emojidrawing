@@ -20,8 +20,15 @@ class ShapesDemoApp extends StatelessWidget {
   }
 }
 
-class ShapesDemoScreen extends StatelessWidget {
+class ShapesDemoScreen extends StatefulWidget {
   const ShapesDemoScreen({super.key});
+
+  @override
+  State<ShapesDemoScreen> createState() => _ShapesDemoScreenState();
+}
+
+class _ShapesDemoScreenState extends State<ShapesDemoScreen> {
+  String selectedEmoji = 'heart';
 
   @override
   Widget build(BuildContext context) {
@@ -35,40 +42,38 @@ class ShapesDemoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Task 1: Basic Shapes',
+              'Emoji Selector',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 200,
-              child: CustomPaint(
-                painter: BasicShapesPainter(),
-                size: const Size(double.infinity, 200),
-              ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedEmoji = 'heart';
+                    });
+                  },
+                  child: const Text('Heart Emoji'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedEmoji = 'party';
+                    });
+                  },
+                  child: const Text('Party Face Emoji'),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Task 2: Combined Shapes (Abstract Design)',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
             SizedBox(
               height: 300,
               child: CustomPaint(
-                painter: CombinedShapesPainter(),
-                size: const Size(double.infinity, 300),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Task 3: Styled Shapes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 300,
-              child: CustomPaint(
-                painter: StyledShapesPainter(),
+                painter: selectedEmoji == 'heart'
+                    ? HeartPainter()
+                    : PartyFacePainter(),
                 size: const Size(double.infinity, 300),
               ),
             ),
@@ -322,4 +327,90 @@ class StyledShapesPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
+}
+
+class HeartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+
+    // Heart path (two lobes meeting at a point)
+    path.moveTo(centerX, centerY + 40);
+    path.cubicTo(
+      centerX - 60, centerY - 20,
+      centerX - 40, centerY - 80,
+      centerX,       centerY - 40,
+    );
+    path.cubicTo(
+      centerX + 40, centerY - 80,
+      centerX + 60, centerY - 20,
+      centerX,       centerY + 40,
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class PartyFacePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+
+    // Face
+    final facePaint = Paint()
+      ..color = Colors.yellow
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(centerX, centerY), 80, facePaint);
+
+    // Eyes
+    final eyePaint = Paint()..color = Colors.black;
+    canvas.drawCircle(Offset(centerX - 26, centerY - 20), 9, eyePaint);
+    canvas.drawCircle(Offset(centerX + 26, centerY - 20), 9, eyePaint);
+
+    // Smile (arc)
+    final smilePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+    canvas.drawArc(
+      Rect.fromCenter(center: Offset(centerX, centerY + 10), width: 90, height: 60),
+      0,          // start angle (radians)
+      3.14159,    // pi radians
+      false,
+      smilePaint,
+    );
+
+    // Party Hat (triangle)
+    final hatPaint = Paint()..color = Colors.blue;
+    final hatPath = Path()
+      ..moveTo(centerX - 36, centerY - 70)
+      ..lineTo(centerX + 36, centerY - 70)
+      ..lineTo(centerX,       centerY - 130)
+      ..close();
+    canvas.drawPath(hatPath, hatPaint);
+
+    // Confetti (simple dots)
+    final confetti1 = Paint()..color = Colors.red;
+    final confetti2 = Paint()..color = Colors.green;
+    final confetti3 = Paint()..color = Colors.purple;
+
+    canvas.drawCircle(Offset(centerX - 60, centerY - 60), 5, confetti1);
+    canvas.drawCircle(Offset(centerX + 58, centerY - 44), 5, confetti2);
+    canvas.drawCircle(Offset(centerX,      centerY - 100), 5, confetti3);
+    canvas.drawCircle(Offset(centerX + 30, centerY - 85), 4, confetti1);
+    canvas.drawCircle(Offset(centerX - 25, centerY - 95), 4, confetti2);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
