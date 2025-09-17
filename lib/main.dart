@@ -13,8 +13,16 @@ class ShapesDemoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Shapes Drawing App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF121212),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1F1F1F),
+          foregroundColor: Colors.white,
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Colors.white70),
+        ),
       ),
       home: const ShapesDemoScreen(),
       debugShowCheckedModeBanner: false,
@@ -35,40 +43,71 @@ class _ShapesDemoScreenState extends State<ShapesDemoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Shapes Drawing App')),
-      // Gradient background for screen
+      appBar: AppBar(
+        title: const Text('Shapes Drawing App'),
+        centerTitle: true,
+      ),
+      // Radial background for screen
       body: Container(
-        decoration: const BoxDecoration(
-          
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.fromARGB(255, 255, 0, 0), // red
-              Color.fromARGB(255, 0, 0, 0), // black
-            ],
+        decoration: BoxDecoration(
+
+          gradient: RadialGradient(
+            center: Alignment.center,
+            radius: 1.0,
+            colors: selectedEmoji == 'heart'
+                ? [
+                    const Color.fromARGB(255, 0, 0, 0),
+                    const Color.fromARGB(255, 0, 0, 0),
+                    const Color.fromARGB(255, 55, 6, 23),
+                    const Color(0xFF370617),
+                    const Color(0xFF611618),
+                    const Color(0xFF821415),
+                    const Color(0xFFA21112),
+                    const Color(0xFFC30E0E),
+                    const Color(0xFFE40B0B),
+                  ]
+                : [
+                    const Color(0xFF240046),
+                    const Color(0xFF3C096C),
+                    const Color(0xFF5A189A),
+                    const Color(0xFF9D4EDD),
+                    const Color(0xFFFF7900),
+                    const Color(0xFFFF9E00),
+
+                    
+                  ],
           ),
         ),
         constraints: const BoxConstraints.expand(),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 'Emoji Selector',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 10),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton(
                     onPressed: () => setState(() => selectedEmoji = 'heart'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedEmoji == 'heart' ? Colors.red : const Color.fromARGB(255, 4, 235, 96),
+                      foregroundColor: selectedEmoji == 'heart' ? Colors.white : Colors.black,
+                    ),
                     child: const Text('Heart Emoji'),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () => setState(() => selectedEmoji = 'party'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedEmoji == 'party' ? const Color.fromRGBO(255, 235, 59, 1) : const Color.fromARGB(255, 0, 0, 0),
+                      foregroundColor: selectedEmoji == 'party' ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 245, 245, 245),
+                    ),
                     child: const Text('Party Face Emoji'),
                   ),
                 ],
@@ -95,6 +134,7 @@ class HeartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.red;
+    canvas.translate(0, 140);
 
     final path = Path();
     final centerX = size.width / 2;
@@ -125,9 +165,10 @@ class PartyFacePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     const faceRadius = 80.0;
+    canvas.translate(0, 140);
 
     // Face
-    final facePaint = Paint()..color = Colors.yellow;
+    final facePaint = Paint()..color = const Color.fromRGBO(255, 235, 59, 1);
     canvas.drawCircle(center, faceRadius, facePaint);
 
     // Eyes
